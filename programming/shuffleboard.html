@@ -34,7 +34,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.4.0">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.6.0">
     
     
       
@@ -42,9 +42,9 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/application.0284f74d.css">
+      <link rel="stylesheet" href="../assets/stylesheets/application.1b62728e.css">
       
-        <link rel="stylesheet" href="../assets/stylesheets/application-palette.01803549.css">
+        <link rel="stylesheet" href="../assets/stylesheets/application-palette.a8b3c06d.css">
       
       
         
@@ -53,12 +53,12 @@
       
     
     
-      <script src="../assets/javascripts/modernizr.74668098.js"></script>
+      <script src="../assets/javascripts/modernizr.268332fc.js"></script>
     
     
       
         <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono&display=fallback">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
         <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
       
     
@@ -181,7 +181,7 @@
         
       
       
-      <main class="md-main">
+      <main class="md-main" role="main">
         <div class="md-main__inner md-grid" data-md-component="container">
           
             
@@ -407,18 +407,6 @@
   </li>
 
         
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="pneumatics.html" title="Using Pneumatics" class="md-nav__link">
-      Using Pneumatics
-    </a>
-  </li>
-
-        
       </ul>
     </nav>
   </li>
@@ -453,6 +441,29 @@
     
   
   
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#testing-shuffleboard" class="md-nav__link">
+    Testing Shuffleboard
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#using-shuffleboard" class="md-nav__link">
+    Using Shuffleboard
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -467,23 +478,147 @@
                 
                 
                 <h1 id="wip-using-shuffleboard"><strong>WIP</strong> Using Shuffleboard<a class="headerlink" href="#wip-using-shuffleboard" title="Permanent link">#</a></h1>
-<p>This page is currently a work in progress. Check back later</p>
 <!-- ![Image Title](imageURL)
 
-## Section One
+## Overview
 
-- Some info
-- Some other into
-    - Some sub info
+In this section we will be going over
+
+1. Using and organzing the Shuffleboard
+2. Creating the Telemetry subsystem and adding buttons and data to be viewed in Shuffleboard
 
 ***
 
-## Section Two
+## What is Shuffleboard
 
-- Info
-- Info 2 -->
+- **Shuffleboard** is one of the boards the driverstation displays robot data with
+- It can have widgets like graphs, camera streams, and meters
+- Unique to **shuffleboard** is the ability to have tabs for different boards
+
+## What is Telemetry
+
+- **Telemetry** is where we add data to be viewed or command buttons on **shuffleboard** or **smartdashboard** 
+- For this section of our tutorial we will be adding switch and encoder data to **shuffleboard**
+
+## Creating the Telemetry Subsystem
+
+!!! summary ""
+    **1)** Create a new **Subsystem** called **Telemetry**
+
+!!! summary ""
+    **2)** Create a constructor for the **Telemetry** class
+
+    - The constructor is where we will create buttons for shuffleboard
+
+!!! summary ""
+    **3)** Inside type: 
+
+    '''java
+    SmartDashboard.putData(“Reset Drive Encoder”, new DriveResetEncoder());
+       '''
+
+!!! summary ""
+    **4)** Create a public method called update
+
+    - This method will run periodically in Robot.java to update sensor data on shuffleboard
+
+!!! summary "" 
+    **5)** Inside type: 
+
+    '''java 
+    SmartDashboard.putNumber(“Drivetrain Encoder Count”, Robot.m_drivetrain.getDriveEncoderCount());
+       '''
+
+!!! summary ""
+    **6)** Do the same for the **getDriveEncoderDistance** method
+
+!!! summary ""
+    **7)** Try adding the **Shooter** Subsystem commands and sensor methods where they should be
+
+??? Example 
+
+    Your full **Telemetry.java** should look like this
+
+    '''java
+    package frc.robot.subsystems;
+
+    import edu.wpi.first.wpilibj.command.Subsystem;
+    import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+    import frc.robot.Robot;
+    import frc.robot.commands.*;
+
+    /**
+    * Add your docs here.
+    */
+    public class Telemetry extends Subsystem {
+      // Put methods for controlling this subsystem
+      // here. Call these from Commands.
+
+      public Telemetry() {
+            // Drivetrain
+            SmartDashboard.putData("Reset Drive Encoder", new DriveResetEncoder());
+
+            // Shooter
+        SmartDashboard.putData("Shooter Up", new ShooterUp());
+            SmartDashboard.putData("Shooter Down", new ShooterDown());
+            SmartDashboard.putData("Shooter Up Auto", new ShooterUpAuto());
+      }
+
+      public void update() {
+            // Drivetrain
+            SmartDashboard.putNumber("Drive Encoder Count", Robot.m_drivetrain.getDriveEncoderCount());
+
+            // Shooter
+            SmartDashboard.putBoolean("Shooter Switch", Robot.m_shooter.isShooterSwitchClosed());
+      }
+
+      @Override
+      public void initDefaultCommand() {
+            // Set the default command for a subsystem here.
+            // setDefaultCommand(new MySpecialCommand());
+      }
+    }
+       '''
+
+## Adding The Telemetry Subsystem to Robot.java
+
+!!! summary ""
+    **1)** When adding **Telemetry** to **Robot.java**, in **robotInit** we must add **Telemetry** after the other subsystems
+
+    - This is because the **Telemetry** subsystem relies on methods that are created in other subsystems before it
+    - It can be added before or after **OI** since they don’t use methods from each other
+
+    <!-- TODO: Explain why we don't put it in robotPeriodic -->
+
+<div class="admonition summary">
+<p><strong>2)</strong> It is <strong>important</strong> that we add the <strong>update</strong> method to <strong>disabledPeriodic, autonomousPeriodic</strong>, and <strong>teleopPeriodic</strong> so that the <strong>Shuffleboard</strong> is always being updated with information on our sensors.</p>
+</div>
+<details class="example"><summary>Example</summary><p>The code you typed before <strong>robotInit</strong> should be this</p>
+<p>'''java
+public static Telemetry m_telemetry; 
+   '''</p>
+<p>The code you typed in <strong>robotInit</strong> should be this</p>
+<p>'''java
+m_telemetry = new Telemetry(); //This must be intialized after all other robot subsystems
+   '''</p>
+<p>The code you typed in <strong>disabledPeriodic, autonomousPeriodic</strong>, and <strong>teleopPeriodic</strong> should be this</p>
+<p>'''java
+Robot.m_telemetry.update();
+   '''</p>
+</details>
+<h2 id="testing-shuffleboard">Testing Shuffleboard<a class="headerlink" href="#testing-shuffleboard" title="Permanent link">#</a></h2>
+<!-- TODO: Add pictures for this section -->
+
+<ul>
+<li>After saving and deploying code, open the driver station</li>
+<li>Click the gear on the left side and configure your team number and set the dashboard type to “ShuffleBoard”</li>
+<li>If you are still connected to the robot you should see boxes for the buttons and data we added in Telemetry</li>
+</ul>
+<h2 id="using-shuffleboard">Using Shuffleboard<a class="headerlink" href="#using-shuffleboard" title="Permanent link">#</a></h2>
+<!-- TODO: Add information and pictures on how to use tabs, group widgets together, saving layouts, etc -->
                 
                   
+                
                 
               
               
@@ -516,7 +651,7 @@
       
     </div>
     
-      <script src="../assets/javascripts/application.245445c6.js"></script>
+      <script src="../assets/javascripts/application.808e90bb.js"></script>
       
       <script>app.initialize({version:"1.0.4",url:{base:".."}})</script>
       

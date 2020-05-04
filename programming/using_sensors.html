@@ -34,7 +34,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.4.0">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.6.0">
     
     
       
@@ -42,9 +42,9 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/application.0284f74d.css">
+      <link rel="stylesheet" href="../assets/stylesheets/application.1b62728e.css">
       
-        <link rel="stylesheet" href="../assets/stylesheets/application-palette.01803549.css">
+        <link rel="stylesheet" href="../assets/stylesheets/application-palette.a8b3c06d.css">
       
       
         
@@ -53,12 +53,12 @@
       
     
     
-      <script src="../assets/javascripts/modernizr.74668098.js"></script>
+      <script src="../assets/javascripts/modernizr.268332fc.js"></script>
     
     
       
         <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono&display=fallback">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
         <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
       
     
@@ -181,7 +181,7 @@
         
       
       
-      <main class="md-main">
+      <main class="md-main" role="main">
         <div class="md-main__inner md-grid" data-md-component="container">
           
             
@@ -407,18 +407,6 @@
   </li>
 
         
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="pneumatics.html" title="Using Pneumatics" class="md-nav__link">
-      Using Pneumatics
-    </a>
-  </li>
-
-        
       </ul>
     </nav>
   </li>
@@ -453,6 +441,56 @@
     
   
   
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#creating-shooterupauto-command" class="md-nav__link">
+    Creating ShooterUpAuto Command
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mapping-shooterautoupcommand" class="md-nav__link">
+    Mapping ShooterAutoUpCommand
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#programming-encoders" class="md-nav__link">
+    Programming Encoders
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#creating-drive-encoder-methods" class="md-nav__link">
+    Creating Drive Encoder Methods
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#creating-resetdriveencoder-instantcommand" class="md-nav__link">
+    Creating ResetDriveEncoder InstantCommand
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -486,18 +524,18 @@ In this section we will be going over
 ## What Are Encoders
 
 - Encoders are sensors that are able to measure the amount has rotated by using a laser or a shaft.
-- Unlike potentiometers their shafts can continuously rotate and count infinitely* positive or negative.\
+- Unlike potentiometers their shafts can continuously rotate and count infinitely* positive or negative.
 
 ## Setting Up Switches
 
 !!! summary ""
-    **1)** For this tutorial we are going to add a switch to the shooter subsystem to automatically change the pitch of the shooter
+    **1)** For this tutorial we are going to add a **switch** to the **shooter subsystem** to automatically change the pitch of the shooter
 
-    - Inside the shooter subsystem we are going to create a switch called shooterSwitch
-    - It will be created as a DigitalInput.
-    - The DigitalInput constructor only takes 1 parameter - (new DigitalInput(port)
+    - Inside the shooter subsystem we are going to create a **switch** called **shooterSwitch**
+    - It will be created as a **DigitalInput**
+    - The **DigitalInput** constructor only takes 1 parameter - (new DigitalInput(port)
     - The port refers to the port numbers on the RoboRIO’s DIO
-    - Store the port in RobotMap
+    - Store the port in **RobotMap**
 
 ??? Example
 
@@ -514,8 +552,218 @@ In this section we will be going over
        '''
 
     In **RobotMap.Java**
+
+    '''java
+    // Digital Inputs
+    public static final int SHOOTER_SWITCH = 0;
+       '''
+
+## Creating isShooterSwitchClosed Method
+
+!!! summary ''
+    **1)** Create a **public boolean** method called **isShooterSwitchClosed**
+
+    - This method will tell us when the shooter switch is pressed
+
+!!! summary ''
+    **2)** Inside type:
+
+    '''java
+    return shooterSwitch.get();
+       '''
+
+    <!-- TODO: Add a tip about keeping inversions at the lowest level or in the subsystems -->
+
+<ul>
+<li>Switches have 2 states: open and closed.</li>
+<li>Depending on how they are wired or coded only one of the 2 states will return either true or false (booleans).</li>
+<li>Make sure you know which is true or false or you may have to invert the switch by rewiring or using the ! operator</li>
+</ul>
+<details class="example"><summary>Example</summary><p>Your <strong>isShooterSwitchClosed()</strong> should look like this</p>
+<p>'''java
+public boolean isShooterSwitchClosed() {
+   return shooterSwitch.get();
+}
+   '''</p>
+</details>
+<h2 id="creating-shooterupauto-command">Creating ShooterUpAuto Command<a class="headerlink" href="#creating-shooterupauto-command" title="Permanent link">#</a></h2>
+<ul>
+<li>We will create a <strong>command</strong> that gives an example of how a Shooter switch may be used</li>
+</ul>
+<div class="admonition summary">
+<p><strong>1)</strong> For this tutorial we will use the switch to create a button that automatically pitches the shooter up after the switch is pressed</p>
+</div>
+<div class="admonition summary">
+<p><strong>2)</strong> Create a new <strong>command</strong> called <strong>ShooterUpAuto</strong></p>
+</div>
+<div class="admonition summary">
+<p><strong>3)</strong> In the constructor add requires(Robot.m_Shooter)</p>
+</div>
+<div class="admonition summary">
+<p><strong>4)</strong> In isFinished return our <strong>isShooterSwitchClosed</strong> method</p>
+<ul>
+<li>we will not put anything in initialize or execute because we don't want anything to happen until the switch is closed</li>
+</ul>
+</div>
+<div class="admonition summary">
+<p><strong>5)</strong> In end add our <strong>pitchUp</strong> method</p>
+<ul>
+<li>we will not put end in interruped either because we only want to change the pitch of the shooter if the switch is closed</li>
+</ul>
+</div>
+<details class="example"><summary>Example</summary><p>Your full <strong>ShooterUpAuto.java</strong> should look like this</p>
+<p>'''java
+package frc.robot.commands;</p>
+<p>import edu.wpi.first.wpilibj.command.Command;
+import frc.robot.Robot;</p>
+<p>public class ShooterUpAuto extends Command {
+  public ShooterUpAuto() {
+  // Use requires() here to declare subsystem dependencies
+  // eg. requires(chassis);
+  requires(Robot.m_shooter);
+  }</p>
+<p>// Called just before this Command runs the first time
+  @Override
+  protected void initialize() {
+  }</p>
+<p>// Called repeatedly when this Command is scheduled to run
+  @Override
+  protected void execute() {
+  }</p>
+<p>// Make this return true when this Command no longer needs to run execute()
+  @Override
+  protected boolean isFinished() {
+    return Robot.m_shooter.isShooterSwitchClosed();
+  }</p>
+<p>// Called once after isFinished returns true
+  @Override
+  protected void end() {
+    Robot.m_shooter.pitchUp();
+  }</p>
+<p>// Called when another command which requires one or more of the same
+  // subsystems is scheduled to run
+  @Override
+  protected void interrupted() {
+  }
+}</p>
+</details>
+<h3 id="mapping-shooterautoupcommand">Mapping ShooterAutoUpCommand<a class="headerlink" href="#mapping-shooterautoupcommand" title="Permanent link">#</a></h3>
+<ul>
+<li>To be able to test our command right now we can map it to a joystick button like we did our other Shooter commands</li>
+<li>It would be best to make it a whenPressed or whileHeld button</li>
+<li>whileHeld will run normally while the button is being held and be interrupted when released</li>
+</ul>
+<details class="example"><summary>Example</summary><p>The code you typed should be this</p>
+<p>'''java
+D3.whenPressed(new ShooterUpAuto());
+   '''</p>
+<p>Or this</p>
+<p>'''java
+D3.whileHeld(new ShooterUpAuto());
+   '''</p>
+</details>
+<h2 id="programming-encoders">Programming Encoders<a class="headerlink" href="#programming-encoders" title="Permanent link">#</a></h2>
+<div class="admonition summary">
+<p><strong>1)</strong> For this tutorial we are going to add a <strong>encoder</strong> to the <strong>Drivetrain</strong> subsystem to keep track of the distance the robot has driven</p>
+</div>
+<div class="admonition summary">
+<p><strong>2)</strong> Inside the <strong>Drivetrain</strong> subsystem we are going to create an <strong>encoder</strong> called <strong>driveEncoder</strong></p>
+<ul>
+<li>It will be created as an Encoder</li>
+<li>The Encoder constructor takes 2 parameters - (new Encoder(port1,port2))</li>
+<li>These are DIO ports on the RoboRIO</li>
+<li>Store ports in RobotMap as DRIVE_ENCODER_A and B</li>
+</ul>
+</div>
+<details class="example"><summary>Example</summary><p>The code you typed outside the constructor should be this</p>
+<p>'''java
+Encoder driveEncoder = null;
+   '''</p>
+<p>Inside the constructor</p>
+<p>'''java
+driveEncoder = new Encoder(RobotMap.DRIVETRAIN_ENCODER_A, RobotMap.DRIVETRAIN_ENCODER_B);
+   '''</p>
+</details>
+<h2 id="creating-drive-encoder-methods">Creating Drive Encoder Methods<a class="headerlink" href="#creating-drive-encoder-methods" title="Permanent link">#</a></h2>
+<div class="admonition summary">
+<p><strong>1)</strong> Create a public double method called <strong>getDriveEncoderCount</strong></p>
+</div>
+<div class="admonition summary">
+<p><strong>2)</strong> Inside type: </p>
+<p>'''java
+return driveEncoder.get();
+   '''</p>
+<!-- TODO: Explain why the method is a returning a double from an int -->
+
+<ul>
+<li>Encoders will return counts as an int</li>
+<li>Depending which direction the encoder shaft rotates the value will increase or decrease</li>
+</ul>
+</div>
+<div class="admonition summary">
+<p><strong>3)</strong> Create a public method called <strong>resetDriveEncoderCount</strong></p>
+</div>
+<div class="admonition summary">
+<p><strong>4)</strong> Inside type:</p>
+<p>'''java
+driveEncoder.reset();
+   '''</p>
+<ul>
+<li>This method will reset the drive encoder to zero which is useful for autonomous or when we use the robot as a ruler</li>
+</ul>
+</div>
+<details class="example"><summary>Example</summary><p>The code you typed should be this</p>
+<p>'''java
+public double getDriveEncoderCount() {
+      return driveEncoder.get();
+}</p>
+<p>public void resetDriveEncoder() {
+      driveEncoder.reset();
+}
+   '''</p>
+</details>
+<h2 id="creating-resetdriveencoder-instantcommand">Creating ResetDriveEncoder InstantCommand<a class="headerlink" href="#creating-resetdriveencoder-instantcommand" title="Permanent link">#</a></h2>
+<ul>
+<li>We need to create a command to use the <strong>resetDriveEncoder</strong> method since it’s a <strong>void</strong> method</li>
+<li>We will create a <strong>InstantCommand</strong> since we will only use it to reset the drive encoder</li>
+</ul>
+<div class="admonition summary">
+<p><strong>1)</strong> Create a new <strong>InstantCommand</strong> called <strong>DriveResetEncoder</strong></p>
+</div>
+<div class="admonition summary">
+<p><strong>2)</strong> In the constructor add requires(Robot.m_drivetrain)</p>
+</div>
+<div class="admonition summary">
+<p><strong>3)</strong> In initialize() add our <strong>resetDriveEncoder</strong> method</p>
+</div>
+<details class="example"><summary>Example</summary><p>Your full <strong>DriveResetEncoder</strong> command should look like this</p>
+<p>'''java
+package frc.robot.commands;</p>
+<p>import edu.wpi.first.wpilibj.command.InstantCommand;
+import frc.robot.Robot;</p>
+<p>/**
+* Add your docs here.
+<em>/
+public class DriveResetEncoder extends InstantCommand {
+/</em>*
+* Add your docs here.
+*/
+ public DriveResetEncoder() {
+       super();
+       // Use requires() here to declare subsystem dependencies
+       // eg. requires(chassis);
+       requires(Robot.m_drivetrain);
+ }</p>
+<p>// Called once when the command executes
+ @Override
+ protected void initialize() {
+       Robot.m_drivetrain.resetDriveEncoder();
+ }</p>
+<p>}</p>
+</details>
                 
                   
+                
                 
               
               
@@ -548,7 +796,7 @@ In this section we will be going over
       
     </div>
     
-      <script src="../assets/javascripts/application.245445c6.js"></script>
+      <script src="../assets/javascripts/application.808e90bb.js"></script>
       
       <script>app.initialize({version:"1.0.4",url:{base:".."}})</script>
       

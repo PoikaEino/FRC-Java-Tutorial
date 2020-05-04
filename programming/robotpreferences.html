@@ -34,7 +34,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.4.0">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.6.0">
     
     
       
@@ -42,9 +42,9 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/application.0284f74d.css">
+      <link rel="stylesheet" href="../assets/stylesheets/application.1b62728e.css">
       
-        <link rel="stylesheet" href="../assets/stylesheets/application-palette.01803549.css">
+        <link rel="stylesheet" href="../assets/stylesheets/application-palette.a8b3c06d.css">
       
       
         
@@ -53,12 +53,12 @@
       
     
     
-      <script src="../assets/javascripts/modernizr.74668098.js"></script>
+      <script src="../assets/javascripts/modernizr.268332fc.js"></script>
     
     
       
         <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono&display=fallback">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
         <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
       
     
@@ -181,7 +181,7 @@
         
       
       
-      <main class="md-main">
+      <main class="md-main" role="main">
         <div class="md-main__inner md-grid" data-md-component="container">
           
             
@@ -407,18 +407,6 @@
   </li>
 
         
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="pneumatics.html" title="Using Pneumatics" class="md-nav__link">
-      Using Pneumatics
-    </a>
-  </li>
-
-        
       </ul>
     </nav>
   </li>
@@ -453,6 +441,22 @@
     
   
   
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#measuring-distance-using-encoders" class="md-nav__link">
+    Measuring Distance Using Encoders
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -467,23 +471,152 @@
                 
                 
                 <h1 id="wip-using-robotpreferences"><strong>WIP</strong> Using RobotPreferences<a class="headerlink" href="#wip-using-robotpreferences" title="Permanent link">#</a></h1>
-<p>This page is currently a work in progress. Check back later</p>
 <!-- ![Image Title](imageURL)
 
-## Section One
+## Overview
 
-- Some info
-- Some other into
-    - Some sub info
+In this section we will be going over
+
+1. Creating and using RobotPreferences in shuffleboard
+2. How to convert encoder counts to inches
 
 ***
 
-## Section Two
+## What Are RobotPreferences
 
-- Info
-- Info 2 -->
+- On SmartDashboard or ShuffleBoard there is a widget called Robot Preferences that can store variables that can be quickly changed
+- For example you might have a variable that changes PID values which can be changed from Robot Preferences on SmartDashboard/ShuffleBoard
+- For this section of our tutorial we will create a robot preference called driveEncoderCountsPerFoot
+
+## Creating RobotPreferences
+
+!!! summary "" 
+    **1)** Create a new **empty class** called **RobotPreferences**
+
+    - This is where we store all of our **RobotPreferences** to access anywhere
+    - If we want to use a **RobotPreference** we call RobotPreferences.preferenceName()
+
+!!! summary "" 
+    **2)** Inside the constructor type:
+
+        '''java 
+    public static double driveEncoderCountsPerFoot(){
+      return Preferences.getInstance().getDouble(“driveEncoderCountsPerFoot”, 1.0);
+    }
+       '''
+
+    - The format for creating a RobotPreference is
+
+        '''java
+    public static variableType prefernceName(){
+      return Preferences.getInstance().getVariableType("preferenceName", value);
+       '''
+
+??? Example
+
+    Your full **RobotPreferences.java** should look like this
+
+    '''java
+    package frc.robot;
+
+    import edu.wpi.first.wpilibj.Preferences;
+
+    /**
+    * Add your docs here.
+    */
+    public class RobotPreferences {
+          // Drivetrain
+          /**
+          * Default value is 1.0
+          */
+          public static double driveEncoderCountsPerFoot() {
+            return Preferences.getInstance().getDouble("driveEncoderCountsPerFoot", 1.0);
+          }
+
+    }
+       '''
+
+## Creating getDriveEncoderDistance Method
+
+- We will use this **RobotPreference** to help us create a method that can keep track of the distance our robot has driven in inches
+
+!!! summary ""
+    **1)** Create a method called **getDriveEncoderDistance** inside of **Drivetrain**
+
+!!! summary ""
+    **2)** Inside type:
+
+        '''java
+    return (getDriveEncoderCount() / RobotPreferences.driveEncoderCountsPerFoot()) * 12;
+       '''
+
+    - This will divide the current encoder count by however many counts there are in a foot then multiply that number by 12 to give us the encoder distance in inches
+
+!!! Note
+    You may need to invert this value if your encoder counts backward when the robot is driving forward
+
+!!! Example
+
+    The code you typed should be this
+
+    '''java
+    public double getDriveEncoderDistance() {
+     return (getDriveEncoderCount() / RobotPreferences.driveEncoderCountsPerFoot()) * 12;
+    }
+       '''
+
+!!! summary ""
+    **3)** Add the method to the **update** method in **Telemetry**
+
+## Using RobotPreferences
+
+<!-- TODO: Explain in more detail how to add RobotPreferences and add pictures -->
+
+<ul>
+<li>After deploying the code to your robot find the <strong>RobotPreferences</strong> widget and add it to your page</li>
+<li>Click the add button and enter the <strong>string</strong> of the <strong>RobotPreference</strong> and its type (doubles and ints are numbers)</li>
+<li>If you double click on the preference value you will notice that you can change its value</li>
+<li>If you change a preference value it will update <strong>immediately</strong></li>
+</ul>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>If you want to save your robot preference values that you've changed make sure you hardcode them in <strong>RobotPreferences.java</strong> later or take a picture if you want to use them again later</p>
+</div>
+<h2 id="measuring-distance-using-encoders">Measuring Distance Using Encoders<a class="headerlink" href="#measuring-distance-using-encoders" title="Permanent link">#</a></h2>
+<ul>
+<li>Right now the encoders tell us distance in terms of encoder counts</li>
+<li>We will use our <strong>driveEncoderCountsPerFoot</strong> preference to save how many counts there are when the robot drives 1 foot</li>
+</ul>
+<div class="admonition summary">
+<p><strong>1)</strong> Move the wheel on your robot with the <strong>Drivetrain</strong> encoder attached 1 foot or drive your robot 1 foot</p>
+</div>
+<div class="admonition summary">
+<p><strong>2)</strong> Read how many counts your encoder has in the <strong>Drive Encoder Count</strong> window</p>
+<ul>
+<li>If you want to measure again press the <strong>Reset Drive Encoder</strong> command button to reset the <strong>Drivetrain</strong> encoder count</li>
+</ul>
+</div>
+<div class="admonition summary">
+<p><strong>3)</strong> Change the value of <strong>driveEncoderCountsPerFoot</strong> in the widget to this number</p>
+</div>
+<div class="admonition summary">
+<p><strong>4)</strong> Reset the <strong>Drivetrain</strong> encoder and move the wheel 1 foot or drive the robot 1 foot again</p>
+</div>
+<div class="admonition summary">
+<p><strong>5)</strong> Make sure your <strong>Drive Encoder Distance</strong> window reads approximately 12 (this is in inches)</p>
+<ul>
+<li>If not repeat these steps again</li>
+</ul>
+</div>
+<div class="admonition summary">
+<p><strong>6)</strong> Save your <strong>RobotPreferences</strong> widget with this value</p>
+</div>
+<div class="admonition summary">
+<p><strong>7)</strong> Hardcode this value in <strong>RobotPreferences.java</strong> in the <strong>driveEncoderCountsPerFoot</strong> method incase you cannot recover your <strong>RobotPreferences</strong> save</p>
+</div>
                 
                   
+                
                 
               
               
@@ -516,7 +649,7 @@
       
     </div>
     
-      <script src="../assets/javascripts/application.245445c6.js"></script>
+      <script src="../assets/javascripts/application.808e90bb.js"></script>
       
       <script>app.initialize({version:"1.0.4",url:{base:".."}})</script>
       
